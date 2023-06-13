@@ -75,11 +75,11 @@ export class CollectionController {
   })
   @HttpCode(HttpStatus.OK)
   async changeData(
-    @Body() CollectionData: UpdateCollectionDto,
+    @Body() data: UpdateCollectionDto,
     @Param('id') id: string,
   ): Promise<UpdateResult> {
     try {
-      return await this.collectionService.change(CollectionData, id);
+      return await this.collectionService.change(data, id);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,13 +1,14 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-class UpdateCollectionDto {
+
+class CreateTagDto {
   @ApiProperty({
     description: `title`,
     example: 'SAG Carpets',
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   readonly title: string;
 }
 
-export default UpdateCollectionDto;
+export default CreateTagDto;

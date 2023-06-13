@@ -2,11 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Collection } from '../collection/collection.entity';
+import { Tag } from '../tag/tag.entity';
 
 @Entity('item')
 export class Item {
@@ -19,4 +22,10 @@ export class Item {
   @ManyToOne(() => Collection, (collection) => collection.items)
   @JoinColumn()
   collection: Collection;
+
+  @ManyToMany(() => Tag, (tag) => tag.items, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
+  tags: Tag[];
 }

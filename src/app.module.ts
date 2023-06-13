@@ -8,6 +8,7 @@ import configuration from './config';
 import { UserModule } from './modules/user/user.module';
 import { CollectionModule } from './modules/collection/collection.module';
 import { ItemModule } from './modules/item/item.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ItemModule } from './modules/item/item.module';
     }),
     CollectionModule,
     ItemModule,
+    TagModule,
     UserModule,
   ],
 })

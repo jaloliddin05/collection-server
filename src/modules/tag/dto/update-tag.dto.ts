@@ -1,6 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-class UpdateCollectionDto {
+
+class UpdateTagDto {
   @ApiProperty({
     description: `title`,
     example: 'SAG Carpets',
@@ -10,4 +11,4 @@ class UpdateCollectionDto {
   readonly title: string;
 }
 
-export default UpdateCollectionDto;
+export default UpdateTagDto;
