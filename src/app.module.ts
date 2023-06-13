@@ -9,6 +9,8 @@ import { UserModule } from './modules/user/user.module';
 import { CollectionModule } from './modules/collection/collection.module';
 import { ItemModule } from './modules/item/item.module';
 import { TagModule } from './modules/tag/tag.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { FieldModule } from './modules/field/field.module';
 
 @Module({
   imports: [
@@ -26,7 +28,9 @@ import { TagModule } from './modules/tag/tag.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
+    AuthModule,
     CollectionModule,
+    FieldModule,
     ItemModule,
     TagModule,
     UserModule,
