@@ -6,6 +6,7 @@ import { join } from 'path';
 
 import configuration from './config';
 import { UserModule } from './modules/user/user.module';
+import { CollectionModule } from './modules/collection/collection.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UserModule } from './modules/user/user.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
+    CollectionModule,
     UserModule,
   ],
 })
