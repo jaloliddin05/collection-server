@@ -5,11 +5,13 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Collection } from '../collection/collection.entity';
 import { Tag } from '../tag/tag.entity';
+import { Field } from '../field/field.entity';
 
 @Entity('item')
 export class Item {
@@ -28,4 +30,7 @@ export class Item {
   })
   @JoinTable()
   tags: Tag[];
+
+  @OneToMany(() => Field, (field) => field.item)
+  fields: Field[];
 }
