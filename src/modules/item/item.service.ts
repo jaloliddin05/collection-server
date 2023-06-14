@@ -5,13 +5,14 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { DataSource, EntityManager, FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 
 import { Item } from './item.entity';
 import { ItemRepository } from './item.repository';
 import { CreateItemDto, UpdateItemDto } from './dto';
 import { TagService } from '../tag/tag.service';
 import { CollectionService } from '../collection/collection.service';
+import { FieldService } from '../field/field.service';
 
 Injectable();
 export class ItemService {
@@ -20,7 +21,7 @@ export class ItemService {
     private readonly itemRepository: ItemRepository,
     private readonly tagService: TagService,
     private readonly collectionService: CollectionService,
-    private readonly connection: DataSource,
+    private readonly fieldService: FieldService,
   ) {}
 
   async getAll(
@@ -78,9 +79,14 @@ export class ItemService {
     item.collection = collection;
     item.tags = tags;
 
-    await this.connection.transaction(async (manager: EntityManager) => {
-      await manager.save(item);
-    });
+    if (value.fields.length) {
+      value.fields.forEach((f) => {
+        f.item = item.id;
+      });
+      await this.fieldService.create(value.fields);
+    }
+
+    await this.itemRepository.save(item);
 
     return item;
   }
@@ -90,9 +96,8 @@ export class ItemService {
     const item = await this.getOne(itemId);
 
     item.tags.push(tag);
-    await this.connection.transaction(async (manager: EntityManager) => {
-      await manager.save(item);
-    });
+
+    await this.itemRepository.save(item);
 
     return item;
   }
@@ -101,9 +106,8 @@ export class ItemService {
     const item = await this.getOne(itemId);
 
     item.tags = item.tags.filter((t) => t.id != tagId);
-    await this.connection.transaction(async (manager: EntityManager) => {
-      await manager.save(item);
-    });
+
+    await this.itemRepository.save(item);
 
     return item;
   }

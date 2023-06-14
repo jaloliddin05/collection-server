@@ -31,7 +31,7 @@ class CreateFieldDto {
   })
   @IsNotEmpty()
   @IsString()
-  readonly item: string;
+  item: string;
 }
 
 export default CreateFieldDto;

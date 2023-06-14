@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { DataSource, EntityManager } from 'typeorm';
 import {
   IPaginationOptions,
   Pagination,
@@ -18,7 +17,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: UsersRepository,
-    private readonly connection: DataSource,
   ) {}
 
   async getAll(
@@ -85,9 +83,8 @@ export class UsersService {
       user.name = userData.name;
       user.email = userData.email;
       await user.hashPassword(userData.password);
-      await this.connection.transaction(async (manager: EntityManager) => {
-        await manager.save(user);
-      });
+
+      await this.usersRepository.save(user);
 
       const newUser = await this.getOne(user.id);
       return newUser;

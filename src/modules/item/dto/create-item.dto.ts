@@ -1,7 +1,14 @@
-import { IsArray, IsNotEmpty, IsString, isArray } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  isArray,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { BadRequestException } from '@nestjs/common';
+import { CreateFieldDto } from '../../field/dto';
 
 function parseStringToArray({ key, value }: TransformFnParams) {
   const arr = value ? JSON.parse(value) : '';
@@ -36,6 +43,15 @@ class CreateItemDto {
   @IsArray()
   // @Transform(parseStringToArray)
   readonly tags: string[];
+
+  @ApiProperty({
+    description: `fields`,
+    example: '[{},{}]',
+  })
+  @IsOptional()
+  @IsArray()
+  // @Transform(parseStringToArray)
+  readonly fields: CreateFieldDto[];
 }
 
 export default CreateItemDto;
