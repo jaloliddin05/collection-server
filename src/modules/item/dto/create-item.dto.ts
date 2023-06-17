@@ -52,6 +52,16 @@ class CreateItemDto {
   @IsArray()
   // @Transform(parseStringToArray)
   readonly fields: CreateFieldDto[];
+
+  @ApiProperty({
+    description: `Collection image`,
+    example: 'file',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  avatar: string;
 }
 
 export default CreateItemDto;

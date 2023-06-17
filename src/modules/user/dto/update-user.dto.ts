@@ -25,6 +25,16 @@ class UpdateUserDto {
   @IsEmail()
   @MaxLength(125)
   readonly email: string;
+
+  @ApiProperty({
+    description: `User image`,
+    example: 'file',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  avatar;
 }
 
 export default UpdateUserDto;

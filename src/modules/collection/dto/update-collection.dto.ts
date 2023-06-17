@@ -8,6 +8,16 @@ class UpdateCollectionDto {
   @IsOptional()
   @IsString()
   readonly title: string;
+
+  @ApiProperty({
+    description: `Article image`,
+    example: 'file',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  avatar;
 }
 
 export default UpdateCollectionDto;

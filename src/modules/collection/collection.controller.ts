@@ -10,8 +10,12 @@ import {
   Param,
   Get,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  Req,
 } from '@nestjs/common';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
@@ -24,6 +28,8 @@ import { Collection } from './collection.entity';
 import { CollectionService } from './collection.service';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Route } from '../../infra/shared/decorators/route.decorator';
+import { MulterStorage } from '../../infra/helpers';
+import { FileUploadValidationForUpdate } from '../../infra/validators';
 
 @ApiTags('Collection')
 @Controller('collection')
@@ -59,10 +65,19 @@ export class CollectionController {
   @ApiCreatedResponse({
     description: 'The collection was created successfully',
   })
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: MulterStorage('uploads/image/collection'),
+    }),
+  )
   @HttpCode(HttpStatus.CREATED)
-  async saveData(@Body() data: CreateCollectionDto): Promise<Collection> {
+  async saveData(
+    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
+    @Body() data: CreateCollectionDto,
+    @Req() req,
+  ) {
     try {
-      return await this.collectionService.create(data);
+      return await this.collectionService.create(data, file, req);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -73,13 +88,20 @@ export class CollectionController {
   @ApiOkResponse({
     description: 'Collection was changed',
   })
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: MulterStorage('uploads/image/collection'),
+    }),
+  )
   @HttpCode(HttpStatus.OK)
   async changeData(
+    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Body() data: UpdateCollectionDto,
     @Param('id') id: string,
+    @Req() req,
   ): Promise<UpdateResult> {
     try {
-      return await this.collectionService.change(data, id);
+      return await this.collectionService.change(data, id, file, req);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

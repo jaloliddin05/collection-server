@@ -10,12 +10,14 @@ import { FindOptionsWhere } from 'typeorm';
 import { Collection } from './collection.entity';
 import { CollectionRepository } from './collection.repository';
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
+import { FileService } from '../file/file.service';
 
 Injectable();
 export class CollectionService {
   constructor(
     @InjectRepository(Collection)
     private readonly collectionRepository: CollectionRepository,
+    private readonly fileService: FileService,
   ) {}
 
   async getAll(
@@ -26,12 +28,19 @@ export class CollectionService {
       order: {
         title: 'ASC',
       },
+      relations: {
+        avatar: true,
+      },
     });
   }
 
   async getOne(id: string) {
     const data = await this.collectionRepository.findOne({
       where: { id },
+      relations: {
+        avatar: true,
+        items: true,
+      },
     });
 
     if (!data) {
@@ -42,17 +51,62 @@ export class CollectionService {
   }
 
   async deleteOne(id: string) {
+    await this.deleteImage(id);
     const response = await this.collectionRepository.delete(id);
     return response;
   }
 
-  async change(value: UpdateCollectionDto, id: string) {
+  async change(
+    value: UpdateCollectionDto,
+    id: string,
+    file: Express.Multer.File,
+    req: any,
+  ) {
+    if (file) {
+      const avatar = await this.updateImage(file, id, req);
+      value.avatar = avatar;
+    }
     const response = await this.collectionRepository.update({ id }, value);
     return response;
   }
 
-  async create(value: CreateCollectionDto) {
-    const data = this.collectionRepository.create(value);
-    return await this.collectionRepository.save(data);
+  async create(value: CreateCollectionDto, file: Express.Multer.File, req) {
+    if (file) {
+      const avatar = await this.uploadImage(file, req);
+      value.avatar = avatar.id;
+    }
+    const data = this.collectionRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Collection)
+      .values(value as unknown as Collection)
+      .returning('id')
+      .execute();
+
+    return data;
+  }
+
+  async uploadImage(file: Express.Multer.File, request) {
+    const avatar = await this.fileService.uploadFile(file, request);
+    return avatar;
+  }
+
+  async updateImage(file: Express.Multer.File, id: string, request) {
+    const data = await this.getOne(id);
+    let avatar;
+    if (data?.avatar?.id) {
+      avatar = await this.fileService.updateFile(data.avatar.id, file, request);
+    } else {
+      avatar = await this.fileService.uploadFile(file, request);
+    }
+
+    return avatar;
+  }
+
+  async deleteImage(id: string) {
+    const data = await this.getOne(id);
+    if (data?.avatar?.id) {
+      await this.fileService.removeFile(data.avatar.id);
+    }
   }
 }

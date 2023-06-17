@@ -27,6 +27,16 @@ class UpdateItemDto {
   @IsArray()
   // @Transform(parseStringToArray)
   readonly tags: string[];
+
+  @ApiProperty({
+    description: `Collection image`,
+    example: 'file',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  avatar: string;
 }
 
 export default UpdateItemDto;
