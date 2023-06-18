@@ -25,13 +25,9 @@ import {
   ApiOperation,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { Response } from 'express';
-import {
-  FileUploadValidationForCreate,
-  FileUploadValidationForUpdate,
-} from '../../infra/validators';
-import { MulterStorage } from '../../infra/helpers';
+import { FileUploadValidationForUpdate } from '../../infra/validators';
 
+import { MulterStorage } from '../../infra/helpers';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { User } from './user.entity';
 import { UsersService } from './user.service';
@@ -102,13 +98,14 @@ export class UsersController {
   }
 
   @Put('/:id')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating user' })
   @ApiOkResponse({
     description: 'User was changed',
   })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor('avatar', {
       storage: MulterStorage('uploads/image/user'),
     }),
   )

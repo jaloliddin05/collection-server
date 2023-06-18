@@ -21,7 +21,10 @@ export class Field {
   @Column()
   value: string;
 
-  @ManyToOne(() => Item, (item) => item)
+  @ManyToOne(() => Item, (item) => item.fields, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   @JoinColumn()
   item: Item;
 }

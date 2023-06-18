@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateResult } from 'typeorm';
@@ -21,6 +22,7 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiOperation,
+  ApiConsumes,
 } from '@nestjs/swagger';
 
 import { CreateItemDto, UpdateItemDto } from './dto';
@@ -61,6 +63,7 @@ export class ItemController {
   }
 
   @Post('/')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new item' })
   @ApiCreatedResponse({
     description: 'The item was created successfully',
@@ -83,7 +86,8 @@ export class ItemController {
     }
   }
 
-  @Patch('/:id')
+  @Put('/:id')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating item' })
   @ApiOkResponse({
     description: 'Item was changed',

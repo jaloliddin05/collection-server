@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  Put,
 } from '@nestjs/common';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,6 +22,7 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiOperation,
+  ApiConsumes,
 } from '@nestjs/swagger';
 
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
@@ -61,6 +63,7 @@ export class CollectionController {
   }
 
   @Post('/')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new Collection' })
   @ApiCreatedResponse({
     description: 'The collection was created successfully',
@@ -83,7 +86,8 @@ export class CollectionController {
     }
   }
 
-  @Patch('/:id')
+  @Put('/:id')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: updating collection' })
   @ApiOkResponse({
     description: 'Collection was changed',

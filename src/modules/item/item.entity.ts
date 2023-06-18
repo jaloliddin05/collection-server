@@ -23,7 +23,10 @@ export class Item {
   @Column('varchar')
   name: string;
 
-  @ManyToOne(() => Collection, (collection) => collection.items)
+  @ManyToOne(() => Collection, (collection) => collection.items, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   @JoinColumn()
   collection: Collection;
 
