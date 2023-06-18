@@ -23,7 +23,6 @@ class CreateUserDto {
   })
   @IsNotEmpty()
   @IsString()
-  @MaxLength(50)
   readonly name: string;
 
   @ApiProperty({
@@ -34,16 +33,6 @@ class CreateUserDto {
   @IsEmail()
   @MaxLength(125)
   readonly email: string;
-
-  @ApiProperty({
-    description: `Collection image`,
-    example: 'file',
-    type: 'string',
-    format: 'binary',
-    required: false,
-  })
-  @IsOptional()
-  avatar;
 }
 
 export default CreateUserDto;

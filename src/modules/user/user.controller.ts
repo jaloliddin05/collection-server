@@ -37,9 +37,10 @@ import { User } from './user.entity';
 import { UsersService } from './user.service';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { PaginationDto } from '../../infra/shared/dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('User')
-@Controller('users')
+@Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -84,26 +85,17 @@ export class UsersController {
     }
   }
 
+  @Public()
   @Post('/')
-  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Method: creates new user' })
   @ApiCreatedResponse({
     description: 'The user was created successfully',
   })
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: MulterStorage('uploads/image/user'),
-    }),
-  )
   @HttpCode(HttpStatus.CREATED)
-  async register(
-    @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
-    @Body() userData: CreateUserDto,
-    @Req() request,
-  ): Promise<User> {
+  async register(@Body() userData: CreateUserDto): Promise<User> {
     try {
-      return await this.usersService.create(userData, file, request);
+      return await this.usersService.create(userData);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

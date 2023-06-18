@@ -14,7 +14,6 @@ class UpdateUserDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(50)
   readonly name: string;
 
   @ApiProperty({

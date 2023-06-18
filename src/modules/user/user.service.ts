@@ -30,6 +30,9 @@ export class UsersService {
       order: {
         name: 'ASC',
       },
+      relations: {
+        avatar: true,
+      },
     });
   }
 
@@ -44,6 +47,10 @@ export class UsersService {
   async getOne(id: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { id },
+      relations: {
+        collections: true,
+        avatar: true,
+      },
     });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -80,14 +87,9 @@ export class UsersService {
     return response;
   }
 
-  async create(data: CreateUserDto, file: Express.Multer.File, request) {
+  async create(data: CreateUserDto) {
     try {
       data.password = await hashPassword(data.password);
-      if (file) {
-        data.avatar = await this.uploadImage(file, request);
-      } else {
-        data.avatar = null;
-      }
       const user = this.usersRepository.create(data);
       return this.usersRepository.save(user);
     } catch (err) {
