@@ -5,7 +5,7 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, ILike } from 'typeorm';
 
 import { Tag } from './tag.entity';
 import { TagRepository } from './tag.repository';
@@ -47,6 +47,15 @@ export class TagService {
       throw new HttpException('data not found', HttpStatus.NOT_FOUND);
     }
 
+    return data;
+  }
+
+  async getTagsByTitle(title: string) {
+    const data = await this.tagRepository.find({
+      where: {
+        title: ILike(`%${title}%`),
+      },
+    });
     return data;
   }
 

@@ -44,13 +44,23 @@ export class TagController {
     }
   }
 
+  @Get('/title')
+  @ApiOperation({ summary: 'Method: returns tags by title' })
+  @ApiOkResponse({
+    description: 'The tags was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getTagsByTitle(@Query('title') title: string): Promise<Tag[]> {
+    return this.tagService.getTagsByTitle(title);
+  }
+
   @Get('/:id')
   @ApiOperation({ summary: 'Method: returns single tag by id' })
   @ApiOkResponse({
     description: 'The tag was returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getMe(@Param('id') id: string): Promise<Tag> {
+  async getById(@Param('id') id: string): Promise<Tag> {
     return this.tagService.getOne(id);
   }
 

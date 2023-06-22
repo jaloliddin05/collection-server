@@ -75,7 +75,7 @@ export class CollectionService {
       const avatar = await this.uploadImage(file, req);
       value.avatar = avatar.id;
     }
-    const data = this.collectionRepository
+    const data = await this.collectionRepository
       .createQueryBuilder()
       .insert()
       .into(Collection)
@@ -83,7 +83,8 @@ export class CollectionService {
       .returning('id')
       .execute();
 
-    return data;
+    const collection = this.getOne(data.raw[0].id);
+    return collection;
   }
 
   async uploadImage(file: Express.Multer.File, request) {
