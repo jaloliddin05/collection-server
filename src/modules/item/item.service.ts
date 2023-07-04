@@ -5,7 +5,7 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { FindOptionsWhere } from 'typeorm';
+import { DataSource, EntityManager, FindOptionsWhere } from 'typeorm';
 
 import { Item } from './item.entity';
 import { ItemRepository } from './item.repository';
@@ -14,6 +14,7 @@ import { TagService } from '../tag/tag.service';
 import { CollectionService } from '../collection/collection.service';
 import { FieldService } from '../field/field.service';
 import { FileService } from '../file/file.service';
+import { UserService } from '../user/user.service';
 
 Injectable();
 export class ItemService {
@@ -24,6 +25,8 @@ export class ItemService {
     private readonly collectionService: CollectionService,
     private readonly fieldService: FieldService,
     private readonly fileService: FileService,
+    private readonly userService:UserService,
+    private readonly connection:DataSource
   ) {}
 
   async getAll(
@@ -47,6 +50,9 @@ export class ItemService {
       relations: {
         collection: true,
         tags: true,
+        likedUsers:{
+          avatar:true
+        }
       },
     });
 
@@ -115,6 +121,33 @@ export class ItemService {
     item.tags.push(tag);
 
     await this.itemRepository.save(item);
+
+    return item;
+  }
+
+  async addLike(userId: string, itemId: string) {
+    const item = await this.getOne(itemId);
+    const user = await this.userService.getById(userId);
+    item.likedUsers.push(user);
+    item.likesCount = item.likedUsers.length;
+
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await manager.save(item);
+    });
+
+    return item;
+  }
+
+  async removeLike(userId: string, itemId: string) {
+    const item = await this.getOne(itemId);
+    item.likedUsers = item.likedUsers.length
+      ? item.likedUsers.filter((lu) => lu.id != userId)
+      : [];
+    item.likesCount = item.likedUsers.length;
+
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await manager.save(item);
+    });
 
     return item;
   }

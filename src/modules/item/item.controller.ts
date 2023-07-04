@@ -111,6 +111,34 @@ export class ItemController {
     }
   }
 
+  @Patch('/add-like')
+  @ApiOperation({ summary: 'Method: adding like to item' })
+  @ApiOkResponse({
+    description: 'Like added to item successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async addLike(@Body() data: { userId: string; collectionId: string }) {
+    try {
+      return await this.itemService.addLike(data.userId, data.collectionId);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Patch('/remove-like')
+  @ApiOperation({ summary: 'Method: removing like to item' })
+  @ApiOkResponse({
+    description: 'Like removed to item successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async removeLike(@Body() data: { userId: string; collectionId: string }) {
+    try {
+      return await this.itemService.removeLike(data.userId, data.collectionId);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Delete('/:id')
   @ApiOperation({ summary: 'Method: deleting item' })
   @ApiOkResponse({

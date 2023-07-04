@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { Collection } from '../collection/collection.entity';
 import { UserRole } from '../../infra/shared/types';
 import { FileEntity } from '../file/file.entity';
+import { Item } from '../item/item.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -48,6 +49,12 @@ export class User extends BaseEntity {
     cascade: true,
   })
   likedCollections: Collection[];
+
+  @ManyToMany(() => Item, (item) => item.likedUsers, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
+  likedItems: Item[];
 
   public async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 10);

@@ -14,6 +14,7 @@ import { Collection } from '../collection/collection.entity';
 import { Tag } from '../tag/tag.entity';
 import { Field } from '../field/field.entity';
 import { FileEntity } from '../file/file.entity';
+import { User } from '../user/user.entity';
 
 @Entity('item')
 export class Item {
@@ -22,6 +23,9 @@ export class Item {
 
   @Column('varchar')
   name: string;
+
+  @Column({ type: 'int', default: 0 })
+  likesCount: number;
 
   @ManyToOne(() => Collection, (collection) => collection.items, {
     onDelete: 'CASCADE',
@@ -44,4 +48,10 @@ export class Item {
   })
   @JoinColumn()
   avatar: FileEntity;
+
+  @ManyToMany(() => User, (user) => user, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
+  likedUsers: User[];
 }

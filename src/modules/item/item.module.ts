@@ -19,6 +19,7 @@ import { FieldModule } from '../field/field.module';
     FileModule,
     UserModule,
     FieldModule,
+    UserModule,
   ],
   controllers: [ItemController],
   providers: [ItemService, ItemRepository],
