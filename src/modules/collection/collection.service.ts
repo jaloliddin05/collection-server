@@ -5,12 +5,13 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { FindOptionsWhere } from 'typeorm';
+import { DataSource, EntityManager, FindOptionsWhere } from 'typeorm';
 
 import { Collection } from './collection.entity';
 import { CollectionRepository } from './collection.repository';
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
 import { FileService } from '../file/file.service';
+import { UserService } from '../user/user.service';
 
 Injectable();
 export class CollectionService {
@@ -18,20 +19,39 @@ export class CollectionService {
     @InjectRepository(Collection)
     private readonly collectionRepository: CollectionRepository,
     private readonly fileService: FileService,
+    private readonly userService: UserService,
+    private readonly connection: DataSource,
   ) {}
 
   async getAll(
     options: IPaginationOptions,
-    where?: FindOptionsWhere<Collection>,
+    userId: string,
   ): Promise<Pagination<Collection>> {
-    return paginate<Collection>(this.collectionRepository, options, {
-      order: {
-        title: 'ASC',
+    const data = await paginate<Collection>(
+      this.collectionRepository,
+      options,
+      {
+        order: {
+          title: 'ASC',
+        },
+        relations: {
+          avatar: true,
+          likedUsers: true,
+        },
       },
-      relations: {
-        avatar: true,
-      },
+    );
+
+    const items = [];
+
+    data.items.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        items.push({ ...c, isLiked: true });
+      } else {
+        items.push({ ...c, isLiked: false });
+      }
     });
+
+    return { ...data, items };
   }
 
   async getOne(id: string) {
@@ -40,6 +60,9 @@ export class CollectionService {
       relations: {
         avatar: true,
         items: true,
+        likedUsers: {
+          avatar: true,
+        },
       },
     });
 
@@ -85,6 +108,33 @@ export class CollectionService {
       .execute();
 
     const collection = this.getOne(data.raw[0].id);
+    return collection;
+  }
+
+  async addLike(userId: string, collectionId: string) {
+    const collection = await this.getOne(collectionId);
+    const user = await this.userService.getById(userId);
+    collection.likedUsers.push(user);
+    collection.likesCount = collection.likedUsers.length;
+
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await manager.save(collection);
+    });
+
+    return collection;
+  }
+
+  async removeLike(userId: string, collectionId: string) {
+    const collection = await this.getOne(collectionId);
+    collection.likedUsers = collection.likedUsers.length
+      ? collection.likedUsers.filter((lu) => lu.id != userId)
+      : [];
+    collection.likesCount = collection.likedUsers.length;
+
+    await this.connection.transaction(async (manager: EntityManager) => {
+      await manager.save(collection);
+    });
+
     return collection;
   }
 

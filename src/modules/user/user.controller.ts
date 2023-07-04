@@ -31,7 +31,7 @@ import { FileUploadValidationForUpdate } from '../../infra/validators';
 import { MulterStorage } from '../../infra/helpers';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { User } from './user.entity';
-import { UsersService } from './user.service';
+import { UserService } from './user.service';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -41,7 +41,7 @@ import { userRoles } from '../../infra/shared/enum';
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UserService) {}
 
   @Get('/me')
   @ApiOperation({ summary: 'Method: returns current user' })

@@ -16,7 +16,7 @@ import { hashPassword } from '../../infra/helpers';
 import { UserRole } from '../../infra/shared/types';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: UsersRepository,
@@ -45,12 +45,13 @@ export class UsersService {
     throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
   }
 
-  async getOne(id: string): Promise<User> {
+  async getOne(id: string) {
     const user = await this.usersRepository.findOne({
       where: { id },
       relations: {
         collections: {
           avatar: true,
+          likedUsers: true,
         },
         avatar: true,
       },
@@ -58,7 +59,18 @@ export class UsersService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    return user;
+
+    const collections = [];
+
+    user.collections.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == id)) {
+        collections.push({ ...c, isLiked: true });
+      } else {
+        collections.push({ ...c, isLiked: false });
+      }
+    });
+
+    return { ...user, collections };
   }
 
   async getByEmail(email: string): Promise<User> {

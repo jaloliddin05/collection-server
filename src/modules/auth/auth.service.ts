@@ -4,12 +4,12 @@ import { JwtService } from '@nestjs/jwt';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { ConfigService } from '@nestjs/config';
 
-import { UsersService } from '../user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}

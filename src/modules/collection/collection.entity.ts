@@ -2,6 +2,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -19,6 +21,9 @@ export class Collection {
   @Column('varchar')
   title: string;
 
+  @Column({ type: 'int', default: 0 })
+  likesCount: number;
+
   @OneToMany(() => Item, (item) => item.collection)
   items: Item[];
 
@@ -31,4 +36,10 @@ export class Collection {
   })
   @JoinColumn()
   avatar: FileEntity;
+
+  @ManyToMany(() => User, (user) => user, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
+  likedUsers: User[];
 }

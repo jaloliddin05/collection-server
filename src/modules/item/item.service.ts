@@ -69,9 +69,9 @@ export class ItemService {
     file: Express.Multer.File,
     request,
   ) {
-    if(file){
-      const avatar = await this.updateImage(file,id,request)
-      value.avatar = avatar
+    if (file) {
+      const avatar = await this.updateImage(file, id, request);
+      value.avatar = avatar;
     }
     const response = await this.itemRepository
       .createQueryBuilder()
@@ -96,14 +96,14 @@ export class ItemService {
       item.avatar = avatar;
     }
 
+    await this.itemRepository.save(item);
+
     if (value.fields.length) {
       value.fields.forEach((f) => {
         f.item = item.id;
       });
       await this.fieldService.create(value.fields);
     }
-
-    await this.itemRepository.save(item);
 
     return item;
   }

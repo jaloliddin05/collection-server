@@ -6,6 +6,7 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
+  ManyToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
@@ -41,6 +42,12 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   avatar: FileEntity;
+
+  @ManyToMany(() => Collection, (collection) => collection.likedUsers, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
+  likedCollections: Collection[];
 
   public async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 10);

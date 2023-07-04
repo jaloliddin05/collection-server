@@ -32,21 +32,26 @@ import { PaginationDto } from '../../infra/shared/dto';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { MulterStorage } from '../../infra/helpers';
 import { FileUploadValidationForUpdate } from '../../infra/validators';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Collection')
 @Controller('collection')
 export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
-  @Get('/')
+  @Get('/all/:userId')
   @ApiOperation({ summary: 'Method: returns all Collections' })
   @ApiOkResponse({
     description: 'The collections were returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getData(@Route() route: string, @Query() query: PaginationDto) {
+  async getData(
+    @Route() route: string,
+    @Query() query: PaginationDto,
+    @Param('userId') userId,
+  ) {
     try {
-      return await this.collectionService.getAll({ ...query, route });
+      return await this.collectionService.getAll({ ...query, route }, userId);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -106,6 +111,40 @@ export class CollectionController {
   ) {
     try {
       return await this.collectionService.change(data, id, file, req);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Patch('/add-like')
+  @ApiOperation({ summary: 'Method: adding like to collection' })
+  @ApiOkResponse({
+    description: 'Like added to collection successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async addLike(@Body() data: { userId: string; collectionId: string }) {
+    try {
+      return await this.collectionService.addLike(
+        data.userId,
+        data.collectionId,
+      );
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Patch('/remove-like')
+  @ApiOperation({ summary: 'Method: removing like to collection' })
+  @ApiOkResponse({
+    description: 'Like removed to collection successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async removeLike(@Body() data: { userId: string; collectionId: string }) {
+    try {
+      return await this.collectionService.removeLike(
+        data.userId,
+        data.collectionId,
+      );
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
