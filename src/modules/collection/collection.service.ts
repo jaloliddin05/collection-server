@@ -66,8 +66,9 @@ export class CollectionService {
       const avatar = await this.updateImage(file, id, req);
       value.avatar = avatar;
     }
-    const response = await this.collectionRepository.update({ id }, value);
-    return response;
+    await this.collectionRepository.update({ id }, value);
+
+    return await this.getOne(id);
   }
 
   async create(value: CreateCollectionDto, file: Express.Multer.File, req) {

@@ -103,7 +103,7 @@ export class CollectionController {
     @Body() data: UpdateCollectionDto,
     @Param('id') id: string,
     @Req() req,
-  ): Promise<UpdateResult> {
+  ) {
     try {
       return await this.collectionService.change(data, id, file, req);
     } catch (err) {

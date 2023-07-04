@@ -13,6 +13,7 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileService } from '../file/file.service';
 import { hashPassword } from '../../infra/helpers';
+import { UserRole } from '../../infra/shared/types';
 
 @Injectable()
 export class UsersService {
@@ -86,6 +87,11 @@ export class UsersService {
     }
     const response = await this.usersRepository.update({ id }, value);
 
+    return response;
+  }
+
+  async changeRole(id: string, role: UserRole) {
+    const response = await this.usersRepository.update({ id }, { role });
     return response;
   }
 

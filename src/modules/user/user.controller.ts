@@ -14,6 +14,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  Patch,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DeleteResult, UpdateResult } from 'typeorm';
@@ -34,6 +35,8 @@ import { UsersService } from './user.service';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { userRoles } from '../../infra/shared/enum';
 
 @ApiTags('User')
 @Controller('user')
@@ -118,6 +121,25 @@ export class UsersController {
   ): Promise<UpdateResult | User> {
     try {
       return await this.usersService.change(userData, id, file, request);
+    } catch (err) {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Roles(userRoles.ADMIN)
+  @Patch('/role/:id')
+  @ApiOperation({ summary: 'Method: updating user role' })
+  @ApiOkResponse({
+    description: 'User role was changed',
+  })
+  @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @HttpCode(HttpStatus.OK)
+  async changeRole(
+    @Body() data,
+    @Param('id') id: string,
+  ): Promise<UpdateResult | User> {
+    try {
+      return await this.usersService.changeRole(id, data.role);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
