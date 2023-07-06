@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Item } from './item.entity';
-import { ItemRepository } from './item.repository';
 import { ItemService } from './item.service';
 import { ItemController } from './item.controller';
 import { TagModule } from '../tag/tag.module';
@@ -22,7 +21,7 @@ import { FieldModule } from '../field/field.module';
     UserModule,
   ],
   controllers: [ItemController],
-  providers: [ItemService, ItemRepository],
-  exports: [ItemService, ItemRepository],
+  providers: [ItemService],
+  exports: [ItemService],
 })
 export class ItemModule {}

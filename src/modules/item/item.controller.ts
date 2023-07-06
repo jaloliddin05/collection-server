@@ -45,11 +45,7 @@ export class ItemController {
   })
   @HttpCode(HttpStatus.OK)
   async getData(@Route() route: string, @Query() query: PaginationDto) {
-    try {
-      return await this.itemService.getAll({ ...query, route });
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.getAll({ ...query, route });
   }
 
   @Get('/:id')
@@ -79,11 +75,7 @@ export class ItemController {
     @UploadedFile(FileUploadValidationForUpdate) file: Express.Multer.File,
     @Req() req,
   ) {
-    try {
-      return await this.itemService.create(data, file, req);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.create(data, file, req);
   }
 
   @Put('/:id')
@@ -104,11 +96,7 @@ export class ItemController {
     @Param('id') id: string,
     @Req() req,
   ): Promise<UpdateResult> {
-    try {
-      return await this.itemService.change(data, id, file, req);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.change(data, id, file, req);
   }
 
   @Patch('/add-like')
@@ -118,11 +106,7 @@ export class ItemController {
   })
   @HttpCode(HttpStatus.OK)
   async addLike(@Body() data: { userId: string; collectionId: string }) {
-    try {
-      return await this.itemService.addLike(data.userId, data.collectionId);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.addLike(data.userId, data.collectionId);
   }
 
   @Patch('/remove-like')
@@ -132,11 +116,7 @@ export class ItemController {
   })
   @HttpCode(HttpStatus.OK)
   async removeLike(@Body() data: { userId: string; collectionId: string }) {
-    try {
-      return await this.itemService.removeLike(data.userId, data.collectionId);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.removeLike(data.userId, data.collectionId);
   }
 
   @Delete('/:id')
@@ -146,10 +126,6 @@ export class ItemController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteData(@Param('id') id: string) {
-    try {
-      return await this.itemService.deleteOne(id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.itemService.deleteOne(id);
   }
 }

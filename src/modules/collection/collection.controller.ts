@@ -15,7 +15,6 @@ import {
   Req,
   Put,
 } from '@nestjs/common';
-import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiCreatedResponse,
@@ -50,11 +49,7 @@ export class CollectionController {
     @Query() query: PaginationDto,
     @Param('userId') userId,
   ) {
-    try {
-      return await this.collectionService.getAll({ ...query, route }, userId);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.getAll({ ...query, route }, userId);
   }
 
   @Get('/:id')
@@ -84,11 +79,7 @@ export class CollectionController {
     @Body() data: CreateCollectionDto,
     @Req() req,
   ) {
-    try {
-      return await this.collectionService.create(data, file, req);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.create(data, file, req);
   }
 
   @Put('/:id')
@@ -109,11 +100,7 @@ export class CollectionController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    try {
-      return await this.collectionService.change(data, id, file, req);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.change(data, id, file, req);
   }
 
   @Patch('/add-like')
@@ -123,14 +110,7 @@ export class CollectionController {
   })
   @HttpCode(HttpStatus.OK)
   async addLike(@Body() data: { userId: string; collectionId: string }) {
-    try {
-      return await this.collectionService.addLike(
-        data.userId,
-        data.collectionId,
-      );
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.addLike(data.userId, data.collectionId);
   }
 
   @Patch('/remove-like')
@@ -140,14 +120,10 @@ export class CollectionController {
   })
   @HttpCode(HttpStatus.OK)
   async removeLike(@Body() data: { userId: string; collectionId: string }) {
-    try {
-      return await this.collectionService.removeLike(
-        data.userId,
-        data.collectionId,
-      );
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.removeLike(
+      data.userId,
+      data.collectionId,
+    );
   }
 
   @Delete('/:id')
@@ -157,10 +133,6 @@ export class CollectionController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteData(@Param('id') id: string) {
-    try {
-      return await this.collectionService.deleteOne(id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.collectionService.deleteOne(id);
   }
 }

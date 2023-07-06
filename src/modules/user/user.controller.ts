@@ -62,11 +62,7 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @HttpCode(HttpStatus.OK)
   async getById(@Param('id') id: string) {
-    try {
-      return await this.usersService.getOne(id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.getOne(id);
   }
 
   @Get('/')
@@ -77,11 +73,7 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @HttpCode(HttpStatus.OK)
   async getData(@Route() route: string, @Query() query: PaginationDto) {
-    try {
-      return await this.usersService.getAll({ ...query, route });
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.getAll({ ...query, route });
   }
 
   @Public()
@@ -93,11 +85,7 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() userData: CreateUserDto): Promise<User> {
-    try {
-      return await this.usersService.create(userData);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.create(userData);
   }
 
   @Put('/:id')
@@ -119,11 +107,7 @@ export class UsersController {
     @Param('id') id: string,
     @Req() request,
   ): Promise<UpdateResult | User> {
-    try {
-      return await this.usersService.change(userData, id, file, request);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.change(userData, id, file, request);
   }
 
   @Roles(userRoles.ADMIN)
@@ -138,11 +122,22 @@ export class UsersController {
     @Body() data,
     @Param('id') id: string,
   ): Promise<UpdateResult | User> {
-    try {
-      return await this.usersService.changeRole(id, data.role);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.changeRole(id, data.role);
+  }
+
+  @Roles(userRoles.ADMIN)
+  @Patch('/role/:id')
+  @ApiOperation({ summary: 'Method: updating user status' })
+  @ApiOkResponse({
+    description: 'User status was changed',
+  })
+  @ApiForbiddenResponse({ description: 'Unauthorized Request' })
+  @HttpCode(HttpStatus.OK)
+  async changeStatus(
+    @Body() data,
+    @Param('id') id: string,
+  ): Promise<UpdateResult | User> {
+    return await this.usersService.changeStatus(id, data.role);
   }
 
   @Delete('/:id')
@@ -153,10 +148,6 @@ export class UsersController {
   @ApiForbiddenResponse({ description: 'Unauthorized Request' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteData(@Param('id') id: string): Promise<DeleteResult> {
-    try {
-      return await this.usersService.deleteOne(id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.usersService.deleteOne(id);
   }
 }

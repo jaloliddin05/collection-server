@@ -1,14 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { DataSource, EntityManager, FindOptionsWhere } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 import { Item } from './item.entity';
-import { ItemRepository } from './item.repository';
 import { CreateItemDto, UpdateItemDto } from './dto';
 import { TagService } from '../tag/tag.service';
 import { CollectionService } from '../collection/collection.service';
@@ -20,13 +24,13 @@ Injectable();
 export class ItemService {
   constructor(
     @InjectRepository(Item)
-    private readonly itemRepository: ItemRepository,
+    private readonly itemRepository: Repository<Item>,
     private readonly tagService: TagService,
     private readonly collectionService: CollectionService,
     private readonly fieldService: FieldService,
     private readonly fileService: FileService,
-    private readonly userService:UserService,
-    private readonly connection:DataSource
+    private readonly userService: UserService,
+    private readonly connection: DataSource,
   ) {}
 
   async getAll(
@@ -45,26 +49,29 @@ export class ItemService {
   }
 
   async getOne(id: string) {
-    const data = await this.itemRepository.findOne({
-      where: { id },
-      relations: {
-        collection: true,
-        tags: true,
-        likedUsers:{
-          avatar:true
-        }
-      },
-    });
-
-    if (!data) {
-      throw new HttpException('data not found', HttpStatus.NOT_FOUND);
-    }
+    const data = await this.itemRepository
+      .findOne({
+        where: { id },
+        relations: {
+          collection: true,
+          tags: true,
+          likedUsers: {
+            avatar: true,
+          },
+        },
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
 
     return data;
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
+    await this.deleteImage(id).catch(() => {
+      throw new NotFoundException('data not found');
+    });
+
     const response = await this.itemRepository.delete(id);
     return response;
   }

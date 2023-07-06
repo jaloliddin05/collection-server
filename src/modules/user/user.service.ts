@@ -1,14 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 
 import {
   IPaginationOptions,
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 
 import { CreateUserDto, UpdateUserDto } from './dto';
-import { UsersRepository } from './user.repository';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileService } from '../file/file.service';
@@ -19,7 +18,7 @@ import { UserRole } from '../../infra/shared/types';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: Repository<User>,
     private readonly fileService: FileService,
   ) {}
 
@@ -38,27 +37,30 @@ export class UserService {
   }
 
   async getById(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    if (user) {
-      return user;
-    }
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    const user = await this.usersRepository
+      .findOne({ where: { id } })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
+
+    return user;
   }
 
   async getOne(id: string) {
-    const user = await this.usersRepository.findOne({
-      where: { id },
-      relations: {
-        collections: {
+    const user = await this.usersRepository
+      .findOne({
+        where: { id },
+        relations: {
+          collections: {
+            avatar: true,
+            likedUsers: true,
+          },
           avatar: true,
-          likedUsers: true,
         },
-        avatar: true,
-      },
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
 
     const collections = [];
 
@@ -78,11 +80,14 @@ export class UserService {
     if (user) {
       return user;
     }
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    throw new NotFoundException('data Not Found');
   }
 
   async deleteOne(id: string) {
-    await this.deleteImage(id);
+    await this.deleteImage(id).catch(() => {
+      throw new NotFoundException('data not found');
+    });
+
     const response = await this.usersRepository.delete(id);
     return response;
   }
@@ -104,6 +109,11 @@ export class UserService {
 
   async changeRole(id: string, role: UserRole) {
     const response = await this.usersRepository.update({ id }, { role });
+    return response;
+  }
+
+  async changeStatus(id: string, status: boolean) {
+    const response = await this.usersRepository.update({ id }, { status });
     return response;
   }
 

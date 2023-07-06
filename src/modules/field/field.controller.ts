@@ -44,11 +44,7 @@ export class FieldController {
   })
   @HttpCode(HttpStatus.CREATED)
   async saveData(@Body() data: CreateFieldDto[]) {
-    try {
-      return await this.fieldService.create(data);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.fieldService.create(data);
   }
 
   @Patch('/:id')
@@ -61,11 +57,7 @@ export class FieldController {
     @Body() data: UpdateFieldDto,
     @Param('id') id: string,
   ): Promise<UpdateResult> {
-    try {
-      return await this.fieldService.change(data, id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.fieldService.change(data, id);
   }
 
   @Delete('/:id')
@@ -75,10 +67,6 @@ export class FieldController {
   })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteData(@Param('id') id: string) {
-    try {
-      return await this.fieldService.deleteOne(id);
-    } catch (err) {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return await this.fieldService.deleteOne(id);
   }
 }

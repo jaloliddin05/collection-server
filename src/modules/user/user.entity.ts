@@ -32,6 +32,9 @@ export class User extends BaseEntity {
   @Column({ default: 1 })
   role: UserRole;
 
+  @Column({ type: 'boolean', default: true })
+  status: boolean = true;
+
   @Column({ type: 'timestamp', nullable: false, default: () => 'NOW()' })
   createdAt: string;
 

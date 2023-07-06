@@ -1,14 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { DataSource, EntityManager, FindOptionsWhere } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 import { Collection } from './collection.entity';
-import { CollectionRepository } from './collection.repository';
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
 import { FileService } from '../file/file.service';
 import { UserService } from '../user/user.service';
@@ -17,7 +21,7 @@ Injectable();
 export class CollectionService {
   constructor(
     @InjectRepository(Collection)
-    private readonly collectionRepository: CollectionRepository,
+    private readonly collectionRepository: Repository<Collection>,
     private readonly fileService: FileService,
     private readonly userService: UserService,
     private readonly connection: DataSource,
@@ -55,27 +59,30 @@ export class CollectionService {
   }
 
   async getOne(id: string) {
-    const data = await this.collectionRepository.findOne({
-      where: { id },
-      relations: {
-        avatar: true,
-        items: true,
-        likedUsers: {
+    const data = await this.collectionRepository
+      .findOne({
+        where: { id },
+        relations: {
           avatar: true,
+          items: true,
+          likedUsers: {
+            avatar: true,
+          },
         },
-      },
-    });
-
-    if (!data) {
-      throw new HttpException('data not found', HttpStatus.NOT_FOUND);
-    }
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
 
     return data;
   }
 
   async deleteOne(id: string) {
     await this.deleteImage(id);
-    const response = await this.collectionRepository.delete(id);
+    const response = await this.collectionRepository.delete(id).catch(() => {
+      throw new NotFoundException('data not found');
+    });
+
     return response;
   }
 

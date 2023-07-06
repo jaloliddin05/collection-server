@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 
-import { FileRepository } from './file.repository';
 import { FileEntity } from './file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FileService {
   constructor(
     @InjectRepository(FileEntity)
-    private readonly fileRepository: FileRepository,
+    private readonly fileRepository: Repository<FileEntity>,
   ) {}
 
   async uploadFile(file: Express.Multer.File, request) {

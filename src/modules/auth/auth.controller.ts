@@ -24,9 +24,6 @@ import { LocalAuthGuard } from './passport-stratagies/local/local-auth.guard';
 import { ACCESS_TOKEN_USER } from './passport-stratagies/access-token-user/access-token-user.strategy';
 import { RefreshTokenUserGuard } from './passport-stratagies/refresh-token-user/refresh-token-user.guard';
 import { REFRESH_TOKEN_USER } from './passport-stratagies/refresh-token-user/refresh-token-user.strategy';
-import { HttpException } from '@nestjs/common/exceptions';
-import { HttpStatus } from '@nestjs/common/enums';
-import { userRoles } from '../../infra/shared/enum';
 
 const accessTokenOptions: CookieOptions = {
   secure: true,

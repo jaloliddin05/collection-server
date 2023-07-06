@@ -1,21 +1,20 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { FindOptionsWhere, ILike } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 
 import { Tag } from './tag.entity';
-import { TagRepository } from './tag.repository';
 import { CreateTagDto, UpdateTagDto } from './dto';
 
 Injectable();
 export class TagService {
   constructor(
     @InjectRepository(Tag)
-    private readonly tagRepository: TagRepository,
+    private readonly tagRepository: Repository<Tag>,
   ) {}
 
   async getAll(
@@ -39,13 +38,13 @@ export class TagService {
   }
 
   async getOne(id: string) {
-    const data = await this.tagRepository.findOne({
-      where: { id },
-    });
-
-    if (!data) {
-      throw new HttpException('data not found', HttpStatus.NOT_FOUND);
-    }
+    const data = await this.tagRepository
+      .findOne({
+        where: { id },
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
 
     return data;
   }
@@ -65,7 +64,10 @@ export class TagService {
   }
 
   async deleteOne(id: string) {
-    const response = await this.tagRepository.delete(id);
+    const response = await this.tagRepository.delete(id).catch(() => {
+      throw new NotFoundException('data not found');
+    });
+
     return response;
   }
 
