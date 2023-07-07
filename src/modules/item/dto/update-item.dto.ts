@@ -25,7 +25,7 @@ class UpdateItemDto {
   })
   @IsOptional()
   @IsArray()
-  // @Transform(parseStringToArray)
+  @Transform(parseStringToArray)
   readonly tags: string[];
 
   @ApiProperty({

@@ -105,8 +105,8 @@ export class ItemController {
     description: 'Like added to item successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async addLike(@Body() data: { userId: string; collectionId: string }) {
-    return await this.itemService.addLike(data.userId, data.collectionId);
+  async addLike(@Body() data: { userId: string; itemId: string }) {
+    return await this.itemService.addLike(data.userId, data.itemId);
   }
 
   @Patch('/remove-like')
@@ -115,8 +115,8 @@ export class ItemController {
     description: 'Like removed to item successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async removeLike(@Body() data: { userId: string; collectionId: string }) {
-    return await this.itemService.removeLike(data.userId, data.collectionId);
+  async removeLike(@Body() data: { userId: string; itemId: string }) {
+    return await this.itemService.removeLike(data.userId, data.itemId);
   }
 
   @Delete('/:id')

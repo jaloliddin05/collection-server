@@ -44,6 +44,7 @@ export class ItemService {
       relations: {
         tags: true,
         collection: true,
+        fields: true,
       },
     });
   }
@@ -58,6 +59,7 @@ export class ItemService {
           likedUsers: {
             avatar: true,
           },
+          fields: true,
         },
       })
       .catch(() => {
@@ -68,6 +70,7 @@ export class ItemService {
   }
 
   async deleteOne(id: string) {
+    await this.deleteImage(id);
     await this.deleteImage(id).catch(() => {
       throw new NotFoundException('data not found');
     });
@@ -96,8 +99,11 @@ export class ItemService {
   }
 
   async create(value: CreateItemDto, file: Express.Multer.File, request) {
-    const tags = await this.tagService.getMoreByIds(value.tags);
-    const collection = await this.collectionService.getOne(value.collection);
+    let tags = null;
+    if (value.tags.length) {
+      tags = await this.tagService.getMoreByIds(value.tags);
+    }
+    const collection = await this.collectionService.getById(value.collection);
 
     const item = new Item();
     item.name = value.name;
@@ -118,7 +124,7 @@ export class ItemService {
       await this.fieldService.create(value.fields);
     }
 
-    return item;
+    return { ...item, fields: value.fields };
   }
 
   async addTag(tagId: string, itemId: string) {

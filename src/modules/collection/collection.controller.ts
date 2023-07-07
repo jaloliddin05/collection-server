@@ -58,8 +58,11 @@ export class CollectionController {
     description: 'The collection was returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getMe(@Param('id') id: string): Promise<Collection> {
-    return this.collectionService.getOne(id);
+  async getMe(
+    @Param('id') id: string,
+    @Query('userId') userId: string,
+  ): Promise<Collection> {
+    return this.collectionService.getOne(id, userId);
   }
 
   @Post('/')
@@ -100,7 +103,13 @@ export class CollectionController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    return await this.collectionService.change(data, id, file, req);
+    return await this.collectionService.change(
+      data,
+      id,
+      file,
+      req,
+      req.user.id,
+    );
   }
 
   @Patch('/add-like')

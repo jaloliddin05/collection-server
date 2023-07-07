@@ -102,9 +102,9 @@ export class UserService {
       const avatar = await this.updateImage(file, id, request);
       value.avatar = avatar;
     }
-    const response = await this.usersRepository.update({ id }, value);
+    await this.usersRepository.update({ id }, value);
 
-    return response;
+    return this.getOne(id);
   }
 
   async changeRole(id: string, role: UserRole) {

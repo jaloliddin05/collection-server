@@ -25,6 +25,10 @@ export class AuthService {
     if (!isPasswordSame) {
       throw new BadRequestException('Invalid password');
     }
+
+    if (!user.status) {
+      throw new BadRequestException('You have blocked by admin');
+    }
     return user;
   }
 

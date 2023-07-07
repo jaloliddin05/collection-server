@@ -106,7 +106,7 @@ export class UsersController {
     @Body() userData: UpdateUserDto,
     @Param('id') id: string,
     @Req() request,
-  ): Promise<UpdateResult | User> {
+  ) {
     return await this.usersService.change(userData, id, file, request);
   }
 
@@ -126,7 +126,7 @@ export class UsersController {
   }
 
   @Roles(userRoles.ADMIN)
-  @Patch('/role/:id')
+  @Patch('/status/:id')
   @ApiOperation({ summary: 'Method: updating user status' })
   @ApiOkResponse({
     description: 'User status was changed',
@@ -137,7 +137,7 @@ export class UsersController {
     @Body() data,
     @Param('id') id: string,
   ): Promise<UpdateResult | User> {
-    return await this.usersService.changeStatus(id, data.role);
+    return await this.usersService.changeStatus(id, data.status);
   }
 
   @Delete('/:id')

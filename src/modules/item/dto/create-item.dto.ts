@@ -12,6 +12,7 @@ import { CreateFieldDto } from '../../field/dto';
 
 function parseStringToArray({ key, value }: TransformFnParams) {
   const arr = value ? JSON.parse(value) : '';
+
   if (!isArray(arr)) {
     throw new BadRequestException(`${key} should be array.`);
   }
@@ -41,7 +42,7 @@ class CreateItemDto {
   })
   @IsNotEmpty()
   @IsArray()
-  // @Transform(parseStringToArray)
+  @Transform(parseStringToArray)
   readonly tags: string[];
 
   @ApiProperty({
@@ -50,7 +51,7 @@ class CreateItemDto {
   })
   @IsOptional()
   @IsArray()
-  // @Transform(parseStringToArray)
+  @Transform(parseStringToArray)
   readonly fields: CreateFieldDto[];
 
   @ApiProperty({

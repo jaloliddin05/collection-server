@@ -58,13 +58,46 @@ export class CollectionService {
     return { ...data, items };
   }
 
-  async getOne(id: string) {
+  async getOne(id: string, userId: string) {
     const data = await this.collectionRepository
       .findOne({
         where: { id },
         relations: {
           avatar: true,
-          items: true,
+          items: {
+            avatar: true,
+            fields: true,
+            tags: true,
+            likedUsers: true,
+          },
+          likedUsers: {
+            avatar: true,
+          },
+        },
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
+
+    const items = [];
+
+    data.items.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        items.push({ ...c, isLiked: true });
+      } else {
+        items.push({ ...c, isLiked: false });
+      }
+    });
+
+    return { ...data, items };
+  }
+
+  async getById(id: string) {
+    const data = await this.collectionRepository
+      .findOne({
+        where: { id },
+        relations: {
+          avatar: true,
           likedUsers: {
             avatar: true,
           },
@@ -91,6 +124,7 @@ export class CollectionService {
     id: string,
     file: Express.Multer.File,
     req: any,
+    userId: string,
   ) {
     if (file) {
       const avatar = await this.updateImage(file, id, req);
@@ -98,7 +132,7 @@ export class CollectionService {
     }
     await this.collectionRepository.update({ id }, value);
 
-    return await this.getOne(id);
+    return await this.getOne(id, userId);
   }
 
   async create(value: CreateCollectionDto, file: Express.Multer.File, req) {
@@ -114,12 +148,12 @@ export class CollectionService {
       .returning('id')
       .execute();
 
-    const collection = this.getOne(data.raw[0].id);
+    const collection = this.getById(data.raw[0].id);
     return collection;
   }
 
   async addLike(userId: string, collectionId: string) {
-    const collection = await this.getOne(collectionId);
+    const collection = await this.getById(collectionId);
     const user = await this.userService.getById(userId);
     collection.likedUsers.push(user);
     collection.likesCount = collection.likedUsers.length;
@@ -132,7 +166,7 @@ export class CollectionService {
   }
 
   async removeLike(userId: string, collectionId: string) {
-    const collection = await this.getOne(collectionId);
+    const collection = await this.getById(collectionId);
     collection.likedUsers = collection.likedUsers.length
       ? collection.likedUsers.filter((lu) => lu.id != userId)
       : [];
@@ -151,7 +185,7 @@ export class CollectionService {
   }
 
   async updateImage(file: Express.Multer.File, id: string, request) {
-    const data = await this.getOne(id);
+    const data = await this.getById(id);
     let avatar;
     if (data?.avatar?.id) {
       avatar = await this.fileService.updateFile(data.avatar.id, file, request);
@@ -163,7 +197,7 @@ export class CollectionService {
   }
 
   async deleteImage(id: string) {
-    const data = await this.getOne(id);
+    const data = await this.getById(id);
     if (data?.avatar?.id) {
       await this.fileService.removeFile(data.avatar.id);
     }
