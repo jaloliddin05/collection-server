@@ -14,6 +14,7 @@ import { Collection } from '../collection/collection.entity';
 import { UserRole } from '../../infra/shared/types';
 import { FileEntity } from '../file/file.entity';
 import { Item } from '../item/item.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -58,6 +59,9 @@ export class User extends BaseEntity {
     cascade: true,
   })
   likedItems: Item[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 
   public async hashPassword(password: string): Promise<void> {
     this.password = await bcrypt.hash(password, 10);

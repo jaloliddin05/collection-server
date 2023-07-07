@@ -11,6 +11,7 @@ import { ItemModule } from './modules/item/item.module';
 import { TagModule } from './modules/tag/tag.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FieldModule } from './modules/field/field.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FieldModule } from './modules/field/field.module';
     }),
     AuthModule,
     CollectionModule,
+    CommentModule,
     FieldModule,
     ItemModule,
     TagModule,

@@ -15,6 +15,7 @@ import { Tag } from '../tag/tag.entity';
 import { Field } from '../field/field.entity';
 import { FileEntity } from '../file/file.entity';
 import { User } from '../user/user.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity('item')
 export class Item {
@@ -54,4 +55,7 @@ export class Item {
   })
   @JoinTable()
   likedUsers: User[];
+
+  @OneToMany(() => Comment, (comment) => comment.item)
+  comments: Comment[];
 }
