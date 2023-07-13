@@ -49,7 +49,44 @@ export class ItemService {
     });
   }
 
-  async getOne(id: string) {
+  async getOne(id: string, userId: string) {
+    const data = await this.itemRepository
+      .findOne({
+        where: { id },
+        relations: {
+          collection: {
+            user: {
+              avatar: true,
+            },
+          },
+          tags: true,
+          likedUsers: {
+            avatar: true,
+          },
+          fields: true,
+          avatar: true,
+          comments: {
+            user: {
+              avatar: true,
+            },
+          },
+        },
+      })
+      .catch(() => {
+        throw new NotFoundException('data not found');
+      });
+
+    let result = {};
+    if (data.likedUsers.find((lu) => lu.id == userId)) {
+      result = { ...data, isLiked: true };
+    } else {
+      result = { ...data, isLiked: true };
+    }
+
+    return result;
+  }
+
+  async getById(id: string) {
     const data = await this.itemRepository
       .findOne({
         where: { id },
@@ -60,6 +97,7 @@ export class ItemService {
             avatar: true,
           },
           fields: true,
+          avatar: true,
         },
       })
       .catch(() => {
@@ -129,7 +167,7 @@ export class ItemService {
 
   async addTag(tagId: string, itemId: string) {
     const tag = await this.tagService.getOne(tagId);
-    const item = await this.getOne(itemId);
+    const item = await this.getById(itemId);
 
     item.tags.push(tag);
 
@@ -139,7 +177,7 @@ export class ItemService {
   }
 
   async addLike(userId: string, itemId: string) {
-    const item = await this.getOne(itemId);
+    const item = await this.getById(itemId);
     const user = await this.userService.getById(userId);
     item.likedUsers.push(user);
     item.likesCount = item.likedUsers.length;
@@ -152,7 +190,7 @@ export class ItemService {
   }
 
   async removeLike(userId: string, itemId: string) {
-    const item = await this.getOne(itemId);
+    const item = await this.getById(itemId);
     item.likedUsers = item.likedUsers.length
       ? item.likedUsers.filter((lu) => lu.id != userId)
       : [];
@@ -166,7 +204,7 @@ export class ItemService {
   }
 
   async removeTag(tagId: string, itemId: string) {
-    const item = await this.getOne(itemId);
+    const item = await this.getById(itemId);
 
     item.tags = item.tags.filter((t) => t.id != tagId);
 
@@ -181,7 +219,7 @@ export class ItemService {
   }
 
   async updateImage(file: Express.Multer.File, id: string, request) {
-    const data = await this.getOne(id);
+    const data = await this.getById(id);
     let avatar;
     if (data?.avatar?.id) {
       avatar = await this.fileService.updateFile(data.avatar.id, file, request);
@@ -193,7 +231,7 @@ export class ItemService {
   }
 
   async deleteImage(id: string) {
-    const data = await this.getOne(id);
+    const data = await this.getById(id);
     if (data?.avatar?.id) {
       await this.fileService.removeFile(data.avatar.id);
     }

@@ -37,6 +37,31 @@ export class TagService {
     return data;
   }
 
+  async getItemsByTag(id: string, userId: string) {
+    const data = await this.tagRepository.findOne({
+      where: { id },
+      relations: {
+        items: {
+          avatar: true,
+          likedUsers: true,
+          tags: true,
+        },
+      },
+    });
+
+    const items = [];
+
+    data.items.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        items.push({ ...c, isLiked: true });
+      } else {
+        items.push({ ...c, isLiked: false });
+      }
+    });
+
+    return { ...data, items };
+  }
+
   async getOne(id: string) {
     const data = await this.tagRepository
       .findOne({

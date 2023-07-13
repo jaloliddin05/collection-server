@@ -32,12 +32,14 @@ import { PaginationDto } from '../../infra/shared/dto';
 import { Route } from '../../infra/shared/decorators/route.decorator';
 import { MulterStorage } from '../../infra/helpers';
 import { FileUploadValidationForUpdate } from '../../infra/validators';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Item')
 @Controller('item')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
+  @Public()
   @Get('/')
   @ApiOperation({ summary: 'Method: returns all items' })
   @ApiOkResponse({
@@ -48,14 +50,15 @@ export class ItemController {
     return await this.itemService.getAll({ ...query, route });
   }
 
+  @Public()
   @Get('/:id')
   @ApiOperation({ summary: 'Method: returns single item by id' })
   @ApiOkResponse({
     description: 'The item was returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getMe(@Param('id') id: string): Promise<Item> {
-    return this.itemService.getOne(id);
+  async getMe(@Param('id') id: string, @Query('userId') userId: string) {
+    return this.itemService.getOne(id, userId);
   }
 
   @Post('/')

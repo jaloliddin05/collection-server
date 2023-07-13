@@ -10,14 +10,6 @@ class CreateCommentDto {
   readonly text: string;
 
   @ApiProperty({
-    description: `user`,
-    example: 'uuid',
-  })
-  @IsNotEmpty()
-  @IsString()
-  readonly user: string;
-
-  @ApiProperty({
     description: `item`,
     example: 'uuid',
   })

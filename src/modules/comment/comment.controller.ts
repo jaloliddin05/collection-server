@@ -9,6 +9,7 @@ import {
   Patch,
   Param,
   Get,
+  Req,
 } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 import {
@@ -21,6 +22,7 @@ import {
 import { CreateCommentDto, UpdateCommentDto } from './dto';
 import { Comment } from './comment.entity';
 import { CommentService } from './comment.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Comment')
 @Controller('comment')
@@ -37,14 +39,25 @@ export class CommentController {
     return this.commentService.getOne(id);
   }
 
+  @Public()
+  @Get('/item/:id')
+  @ApiOperation({ summary: 'Method: returns comments by item id' })
+  @ApiOkResponse({
+    description: 'The comments was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getByItemId(@Param('id') id: string): Promise<Comment[]> {
+    return this.commentService.getByItemId(id);
+  }
+
   @Post('/')
   @ApiOperation({ summary: 'Method: creates new comment' })
   @ApiCreatedResponse({
     description: 'The comment was created successfully',
   })
   @HttpCode(HttpStatus.CREATED)
-  async saveData(@Body() data: CreateCommentDto[]) {
-    return await this.commentService.create(data);
+  async saveData(@Body() data: CreateCommentDto[], @Req() req) {
+    return await this.commentService.create(data, req.user.id);
   }
 
   @Patch('/:id')

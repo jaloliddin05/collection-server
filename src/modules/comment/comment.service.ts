@@ -16,11 +16,23 @@ export class CommentService {
     const data = await this.commentRepository
       .findOne({
         where: { id },
+        relations: {
+          user: { avatar: true },
+        },
       })
       .catch(() => {
         throw new NotFoundException('data not found');
       });
 
+    return data;
+  }
+
+  async getByItemId(id: string) {
+    const data = await this.commentRepository.find({
+      where: { item: { id } },
+      order: { date: 'DESC' },
+      relations: { user: { avatar: true } },
+    });
     return data;
   }
 
@@ -45,14 +57,15 @@ export class CommentService {
     return response;
   }
 
-  async create(value: CreateCommentDto[]) {
-    const data = this.commentRepository
+  async create(value: CreateCommentDto[], user: string) {
+    const data = await this.commentRepository
       .createQueryBuilder()
       .insert()
       .into(Comment)
-      .values(value as unknown as Comment)
+      .values({ ...value, user } as unknown as Comment)
+      .returning('id')
       .execute();
 
-    return data;
+    return await this.getOne(data.raw[0].id);
   }
 }

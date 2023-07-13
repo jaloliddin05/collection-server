@@ -38,6 +38,7 @@ import { Public } from '../auth/decorators/public.decorator';
 export class CollectionController {
   constructor(private readonly collectionService: CollectionService) {}
 
+  @Public()
   @Get('/all/:userId')
   @ApiOperation({ summary: 'Method: returns all Collections' })
   @ApiOkResponse({
@@ -52,6 +53,7 @@ export class CollectionController {
     return await this.collectionService.getAll({ ...query, route }, userId);
   }
 
+  @Public()
   @Get('/:id')
   @ApiOperation({ summary: 'Method: returns single collection by id' })
   @ApiOkResponse({
@@ -63,6 +65,17 @@ export class CollectionController {
     @Query('userId') userId: string,
   ): Promise<Collection> {
     return this.collectionService.getOne(id, userId);
+  }
+
+  @Public()
+  @Get('/ten-more-liked')
+  @ApiOperation({ summary: 'Method: returns 10 more liked collections' })
+  @ApiOkResponse({
+    description: 'The collections was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getTenMoreLikedCollections(): Promise<Collection[]> {
+    return this.collectionService.getTenMoreLikedCollections();
   }
 
   @Post('/')

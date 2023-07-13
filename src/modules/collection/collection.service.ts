@@ -58,6 +58,17 @@ export class CollectionService {
     return { ...data, items };
   }
 
+  async getTenMoreLikedCollections() {
+    const data = await this.collectionRepository.find({
+      order: {
+        likesCount: 'DESC',
+      },
+      take: 10,
+    });
+
+    return data;
+  }
+
   async getOne(id: string, userId: string) {
     const data = await this.collectionRepository
       .findOne({

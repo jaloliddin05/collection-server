@@ -24,6 +24,7 @@ import { Tag } from './tag.entity';
 import { TagService } from './tag.service';
 import { PaginationDto } from '../../infra/shared/dto';
 import { Route } from '../../infra/shared/decorators/route.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Tag')
 @Controller('tag')
@@ -58,6 +59,20 @@ export class TagController {
   @HttpCode(HttpStatus.OK)
   async getById(@Param('id') id: string): Promise<Tag> {
     return this.tagService.getOne(id);
+  }
+
+  @Public()
+  @Get('/item/:id')
+  @ApiOperation({ summary: 'Method: returns single tag by id' })
+  @ApiOkResponse({
+    description: 'The tag was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getItemsByTagId(
+    @Param('id') id: string,
+    @Query('userId') userId: string,
+  ): Promise<Tag> {
+    return this.tagService.getItemsByTag(id, userId);
   }
 
   @Post('/')
