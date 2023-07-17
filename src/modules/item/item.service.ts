@@ -20,9 +20,12 @@ import { CollectionService } from '../collection/collection.service';
 import { FieldService } from '../field/field.service';
 import { FileService } from '../file/file.service';
 import { UserService } from '../user/user.service';
+import { SearchService } from '../elastic-search/elastic-search.service';
+import { Comment } from '../comment/comment.entity';
 
 Injectable();
 export class ItemService {
+  elasticSearchIndex = 'items';
   constructor(
     @InjectRepository(Item)
     private readonly itemRepository: Repository<Item>,
@@ -118,11 +121,17 @@ export class ItemService {
 
   async deleteOne(id: string) {
     await this.deleteImage(id);
-    await this.deleteImage(id).catch(() => {
+    const item = await this.itemRepository.findOne({
+      where: { id },
+      relations: { collection: true },
+    });
+
+    await this.collectionService.decrCollectionItemCount(item.collection.id);
+
+    const response = await this.itemRepository.delete(id).catch(() => {
       throw new NotFoundException('data not found');
     });
 
-    const response = await this.itemRepository.delete(id);
     return response;
   }
 

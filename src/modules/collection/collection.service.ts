@@ -263,4 +263,12 @@ export class CollectionService {
     collection.itemsCount += 1;
     await this.collectionRepository.save(collection);
   }
+
+  async decrCollectionItemCount(id: string) {
+    const collection = await this.collectionRepository.findOne({
+      where: { id },
+    });
+    collection.itemsCount -= 1;
+    await this.collectionRepository.save(collection);
+  }
 }

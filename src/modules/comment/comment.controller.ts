@@ -56,7 +56,7 @@ export class CommentController {
     description: 'The comment was created successfully',
   })
   @HttpCode(HttpStatus.CREATED)
-  async saveData(@Body() data: CreateCommentDto[], @Req() req) {
+  async saveData(@Body() data: CreateCommentDto, @Req() req) {
     return await this.commentService.create(data, req.user.id);
   }
 

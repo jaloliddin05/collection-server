@@ -12,6 +12,7 @@ import { TagModule } from './modules/tag/tag.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FieldModule } from './modules/field/field.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { ElasticSearchModule } from './modules/elastic-search/elastic-search.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CommentModule } from './modules/comment/comment.module';
     AuthModule,
     CollectionModule,
     CommentModule,
+    // ElasticSearchModule,
     FieldModule,
     ItemModule,
     TagModule,

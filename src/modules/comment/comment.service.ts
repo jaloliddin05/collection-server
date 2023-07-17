@@ -9,7 +9,7 @@ Injectable();
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
-    private readonly commentRepository: Repository<Comment>,
+    private readonly commentRepository: Repository<Comment>
   ) {}
 
   async getOne(id: string) {
@@ -57,7 +57,7 @@ export class CommentService {
     return response;
   }
 
-  async create(value: CreateCommentDto[], user: string) {
+  async create(value: CreateCommentDto, user: string) {
     const data = await this.commentRepository
       .createQueryBuilder()
       .insert()
