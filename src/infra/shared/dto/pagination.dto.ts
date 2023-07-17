@@ -33,7 +33,7 @@ class PaginationDto {
   readonly page: number;
 
   constructor() {
-    this.limit = this.limit ? this.limit : 100;
+    this.limit = this.limit ? this.limit : 8;
     this.page = this.page ? this.page : 1;
   }
 }

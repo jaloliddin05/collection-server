@@ -54,6 +54,43 @@ export class CollectionController {
   }
 
   @Public()
+  @Get('/all-for-search')
+  @ApiOperation({ summary: 'Method: returns all Collections' })
+  @ApiOkResponse({
+    description: 'The collections were returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getAllCollection() {
+    return await this.collectionService.getAllForSearch();
+  }
+
+  @Public()
+  @Get('/eight-more-liked/:userId')
+  @ApiOperation({ summary: 'Method: returns 8 more liked collections' })
+  @ApiOkResponse({
+    description: 'The collections was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getTenMoreLikedCollections(
+    @Param('userId') userId: string,
+  ): Promise<Collection[]> {
+    return this.collectionService.getEightMoreLikedCollections(userId);
+  }
+
+  @Public()
+  @Get('/eight-big-collection/:userId')
+  @ApiOperation({ summary: 'Method: returns 8 big collections' })
+  @ApiOkResponse({
+    description: 'The collections was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async getEightBigCollection(
+    @Param('userId') userId: string,
+  ): Promise<Collection[]> {
+    return this.collectionService.getEightBigCollections(userId);
+  }
+
+  @Public()
   @Get('/:id')
   @ApiOperation({ summary: 'Method: returns single collection by id' })
   @ApiOkResponse({
@@ -65,17 +102,6 @@ export class CollectionController {
     @Query('userId') userId: string,
   ): Promise<Collection> {
     return this.collectionService.getOne(id, userId);
-  }
-
-  @Public()
-  @Get('/ten-more-liked')
-  @ApiOperation({ summary: 'Method: returns 10 more liked collections' })
-  @ApiOkResponse({
-    description: 'The collections was returned successfully',
-  })
-  @HttpCode(HttpStatus.OK)
-  async getTenMoreLikedCollections(): Promise<Collection[]> {
-    return this.collectionService.getTenMoreLikedCollections();
   }
 
   @Post('/')

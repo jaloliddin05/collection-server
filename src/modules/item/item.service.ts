@@ -9,6 +9,7 @@ import {
   DataSource,
   EntityManager,
   FindOptionsWhere,
+  ILike,
   Repository,
 } from 'typeorm';
 
@@ -107,6 +108,14 @@ export class ItemService {
     return data;
   }
 
+  async search(text: string) {
+    const data = await this.itemRepository.find({
+      where: { name: ILike(`%${text}%`) },
+    });
+
+    return data;
+  }
+
   async deleteOne(id: string) {
     await this.deleteImage(id);
     await this.deleteImage(id).catch(() => {
@@ -161,6 +170,7 @@ export class ItemService {
       });
       await this.fieldService.create(value.fields);
     }
+    await this.collectionService.incrCollectionItemCount(value.collection);
 
     return { ...item, fields: value.fields };
   }

@@ -51,6 +51,17 @@ export class ItemController {
   }
 
   @Public()
+  @Get('/search')
+  @ApiOperation({ summary: 'Method: returns items by search' })
+  @ApiOkResponse({
+    description: 'The items was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async search(@Query('text') text: string) {
+    return this.itemService.search(text);
+  }
+
+  @Public()
   @Get('/:id')
   @ApiOperation({ summary: 'Method: returns single item by id' })
   @ApiOkResponse({

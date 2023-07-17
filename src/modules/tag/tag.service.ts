@@ -17,15 +17,8 @@ export class TagService {
     private readonly tagRepository: Repository<Tag>,
   ) {}
 
-  async getAll(
-    options: IPaginationOptions,
-    where?: FindOptionsWhere<Tag>,
-  ): Promise<Pagination<Tag>> {
-    return paginate<Tag>(this.tagRepository, options, {
-      order: {
-        title: 'ASC',
-      },
-    });
+  async getAll(): Promise<Tag[]> {
+    return await this.tagRepository.find();
   }
 
   async getMoreByIds(ids: string[]) {

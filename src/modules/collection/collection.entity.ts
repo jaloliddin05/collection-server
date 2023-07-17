@@ -24,6 +24,9 @@ export class Collection {
   @Column({ type: 'int', default: 0 })
   likesCount: number;
 
+  @Column({type:"int",default:0})
+  itemsCount:number = 0
+
   @OneToMany(() => Item, (item) => item.collection)
   items: Item[];
 

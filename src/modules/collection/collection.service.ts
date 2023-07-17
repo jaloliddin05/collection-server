@@ -58,15 +58,57 @@ export class CollectionService {
     return { ...data, items };
   }
 
-  async getTenMoreLikedCollections() {
+  async getAllForSearch() {
+    const data = await this.collectionRepository.find();
+    return data;
+  }
+
+  async getEightMoreLikedCollections(userId: string) {
     const data = await this.collectionRepository.find({
       order: {
         likesCount: 'DESC',
       },
-      take: 10,
+      relations: {
+        avatar: true,
+        likedUsers: true,
+      },
+      take: 8,
     });
 
-    return data;
+    const res = [];
+    data.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        res.push({ ...c, isLiked: true });
+      } else {
+        res.push({ ...c, isLiked: false });
+      }
+    });
+
+    return res;
+  }
+
+  async getEightBigCollections(userId: string) {
+    const data = await this.collectionRepository.find({
+      order: {
+        itemsCount: 'DESC',
+      },
+      relations: {
+        avatar: true,
+        likedUsers: true,
+      },
+      take: 8,
+    });
+
+    const res = [];
+    data.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        res.push({ ...c, isLiked: true });
+      } else {
+        res.push({ ...c, isLiked: false });
+      }
+    });
+
+    return res;
   }
 
   async getOne(id: string, userId: string) {
@@ -212,5 +254,13 @@ export class CollectionService {
     if (data?.avatar?.id) {
       await this.fileService.removeFile(data.avatar.id);
     }
+  }
+
+  async incrCollectionItemCount(id: string) {
+    const collection = await this.collectionRepository.findOne({
+      where: { id },
+    });
+    collection.itemsCount += 1;
+    await this.collectionRepository.save(collection);
   }
 }

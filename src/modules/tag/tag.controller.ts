@@ -31,14 +31,15 @@ import { Public } from '../auth/decorators/public.decorator';
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
+  @Public()
   @Get('/')
   @ApiOperation({ summary: 'Method: returns all tags' })
   @ApiOkResponse({
     description: 'The tags were returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getData(@Route() route: string, @Query() query: PaginationDto) {
-    return await this.tagService.getAll({ ...query, route });
+  async getData() {
+    return await this.tagService.getAll();
   }
 
   @Get('/title')
