@@ -39,18 +39,30 @@ export class ItemService {
 
   async getAll(
     options: IPaginationOptions,
-    where?: FindOptionsWhere<Item>,
+    userId: string,
   ): Promise<Pagination<Item>> {
-    return paginate<Item>(this.itemRepository, options, {
+    const data = await paginate<Item>(this.itemRepository, options, {
       order: {
         name: 'ASC',
       },
       relations: {
         tags: true,
-        collection: true,
-        fields: true,
+        likedUsers: true,
+        avatar: true,
       },
     });
+
+    const items = [];
+
+    data.items.forEach((c) => {
+      if (c.likedUsers.find((l) => l.id == userId)) {
+        items.push({ ...c, isLiked: true });
+      } else {
+        items.push({ ...c, isLiked: false });
+      }
+    });
+
+    return { ...data, items };
   }
 
   async getOne(id: string, userId: string) {
@@ -111,9 +123,58 @@ export class ItemService {
     return data;
   }
 
+  async getMoreLiked(userId: string) {
+    const data = await this.itemRepository.find({
+      order: {
+        likesCount: 'DESC',
+      },
+      relations: {
+        tags: true,
+        likedUsers: true,
+        avatar: true,
+      },
+      take: 8,
+    });
+
+    let result = [];
+    data.forEach((d) => {
+      if (d.likedUsers.find((lu) => lu.id == userId)) {
+        result.push({ ...d, isLiked: true });
+      } else {
+        result.push({ ...d, isLiked: true });
+      }
+    });
+
+    return result;
+  }
+
   async search(text: string) {
     const data = await this.itemRepository.find({
-      where: { name: ILike(`%${text}%`) },
+      where: [
+        { name: ILike(`%${text}%`) },
+        {
+          comments: {
+            text: ILike(`%${text}%`),
+          },
+        },
+        {
+          collection: {
+            title: ILike(`%${text}%`),
+          },
+        },
+        {
+          collection: {
+            user: {
+              name: ILike(`%${text}%`),
+            },
+          },
+        },
+        {
+          fields: {
+            value: ILike(`%${text}%`),
+          },
+        },
+      ],
     });
 
     return data;

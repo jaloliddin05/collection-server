@@ -40,14 +40,18 @@ export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
   @Public()
-  @Get('/')
+  @Get('/all/:userId')
   @ApiOperation({ summary: 'Method: returns all items' })
   @ApiOkResponse({
     description: 'The items were returned successfully',
   })
   @HttpCode(HttpStatus.OK)
-  async getData(@Route() route: string, @Query() query: PaginationDto) {
-    return await this.itemService.getAll({ ...query, route });
+  async getData(
+    @Route() route: string,
+    @Query() query: PaginationDto,
+    @Query('userId') userId: string,
+  ) {
+    return await this.itemService.getAll({ ...query, route }, userId);
   }
 
   @Public()
@@ -59,6 +63,17 @@ export class ItemController {
   @HttpCode(HttpStatus.OK)
   async search(@Query('text') text: string) {
     return this.itemService.search(text);
+  }
+
+  @Public()
+  @Get('/more-liked/:userId')
+  @ApiOperation({ summary: 'Method: returns more liked items' })
+  @ApiOkResponse({
+    description: 'The items was returned successfully',
+  })
+  @HttpCode(HttpStatus.OK)
+  async moreLiked(@Param('userId') userId: string) {
+    return this.itemService.getMoreLiked(userId);
   }
 
   @Public()
