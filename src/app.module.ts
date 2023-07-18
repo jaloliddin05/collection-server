@@ -13,6 +13,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { FieldModule } from './modules/field/field.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ElasticSearchModule } from './modules/elastic-search/elastic-search.module';
+import { CommentSocketModule } from './modules/web-socket/web-socket.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ElasticSearchModule } from './modules/elastic-search/elastic-search.mod
     AuthModule,
     CollectionModule,
     CommentModule,
+    CommentSocketModule,
     // ElasticSearchModule,
     FieldModule,
     ItemModule,
