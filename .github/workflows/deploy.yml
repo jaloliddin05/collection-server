@@ -1,0 +1,27 @@
+name: Deployment Itransition Server
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploying to server...
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/user/getter/i-backend
+            git stash
+            git pull origin main
+            git status
+            npm install --legacy-peer-deps
+            npm run build
+            pm2 restart i-backend
