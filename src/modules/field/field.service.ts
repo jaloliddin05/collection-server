@@ -40,7 +40,7 @@ export class FieldService {
       .where('id = :id', { id })
       .execute();
 
-    return response;
+    return await this.getOne(id);
   }
 
   async create(value: CreateFieldDto[]) {

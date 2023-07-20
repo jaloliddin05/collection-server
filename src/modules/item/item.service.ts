@@ -212,6 +212,7 @@ export class ItemService {
       .set(value as unknown as Item)
       .where('id = :id', { id })
       .execute();
+
     return response;
   }
 

@@ -56,7 +56,7 @@ export class FieldController {
   async changeData(
     @Body() data: UpdateFieldDto,
     @Param('id') id: string,
-  ): Promise<UpdateResult> {
+  ): Promise<Field> {
     return await this.fieldService.change(data, id);
   }
 
