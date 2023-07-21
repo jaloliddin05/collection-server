@@ -124,7 +124,7 @@ export class ItemController {
     @Body() data: UpdateItemDto,
     @Param('id') id: string,
     @Req() req,
-  ): Promise<UpdateResult> {
+  ) {
     return await this.itemService.change(data, id, file, req);
   }
 

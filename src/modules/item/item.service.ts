@@ -213,7 +213,7 @@ export class ItemService {
       .where('id = :id', { id })
       .execute();
 
-    return response;
+    return await this.getOne(id, request?.user?.id);
   }
 
   async create(value: CreateItemDto, file: Express.Multer.File, request) {
